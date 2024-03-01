@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "result": {
+    "wallet": true,
+    "balance": "4936421995",
+    "account_state": "active",
+    "wallet_type": "wallet v4 r2",
+    "seqno": 2,
+    "last_transaction_id": {
+      "@type": "internal.transactionId",
+      "lt": "19292975000001",
+      "hash": "TFbnQ3agrugaYJqajHbakIzj1buHgvgY49504plJAcE="
+    },
+    "wallet_id": 698983191
+  }
+}

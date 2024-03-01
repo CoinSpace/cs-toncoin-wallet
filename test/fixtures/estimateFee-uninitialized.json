@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "result": {
+    "@type": "query.fees",
+    "source_fees": {
+      "@type": "fees",
+      "in_fwd_fee": 9190000,
+      "storage_fee": 7,
+      "gas_fee": 3308000,
+      "fwd_fee": 1000000
+    },
+    "destination_fees": [],
+    "@extra": "1708557210.997577:0:0.15944955275854067"
+  }
+}

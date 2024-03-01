@@ -1,0 +1,57 @@
+{
+  "name": "@coinspace/cs-ton-wallet",
+  "version": "0.0.0",
+  "repository": "https://github.com/CoinSpace/cs-ton-wallet",
+  "description": "TON Wallet for Coin app",
+  "author": "Coin Crypto Wallet <support@coin.space> (https://coin.space/)",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./errors": "./lib/errors.js"
+  },
+  "scripts": {
+    "lint": "eslint . --ext .js --report-unused-disable-directives",
+    "test": "mocha test --reporter spec"
+  },
+  "dependencies": {
+    "@scure/base": "^1.1.5",
+    "@ton/ton": "^13.9.0",
+    "buffer": "^6.0.3",
+    "ed25519-keygen": "^0.4.10"
+  },
+  "peerDependencies": {
+    "@coinspace/cs-common": "^1.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-coinspace": "^2.0.0",
+    "mocha": "^10.0.0",
+    "sinon": "^17.0.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "coinspace"
+    ],
+    "env": {
+      "browser": true
+    },
+    "parserOptions": {
+      "requireConfigFile": false,
+      "sourceType": "module"
+    },
+    "overrides": [
+      {
+        "files": [
+          "*.test.js",
+          "test/*"
+        ],
+        "env": {
+          "node": true,
+          "mocha": true
+        }
+      }
+    ]
+  }
+}
