@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://npm.pkg.github.com/
-      - run: npm install
+      - run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_READ_TOKEN}}
       - run: npm run lint
@@ -31,7 +31,7 @@ jobs:
         with:
           node-version: 20
           registry-url: https://npm.pkg.github.com/
-      - run: npm install
+      - run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_READ_TOKEN}}
       - run: npm publish --access public
