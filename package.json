@@ -2,7 +2,7 @@
   "name": "@coinspace/cs-ton-wallet",
   "version": "0.0.0",
   "repository": "https://github.com/CoinSpace/cs-ton-wallet",
-  "description": "TON Wallet for Coin app",
+  "description": "TON Wallet for Coin Wallet",
   "author": "Coin Wallet <support@coin.space> (https://coin.space/)",
   "license": "MIT",
   "type": "module",
