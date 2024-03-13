@@ -129,7 +129,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: ADDRESS,
           },
@@ -154,7 +154,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: ADDRESS,
           },
@@ -179,7 +179,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: ADDRESS,
           },
@@ -243,7 +243,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'GET',
-            url: 'api/v2/getWalletInformation',
+            url: 'api/v1/getWalletInformation',
             params: {
               address: ADDRESS,
             },
@@ -295,7 +295,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'GET',
-            url: 'api/v2/getWalletInformation',
+            url: 'api/v1/getWalletInformation',
             params: {
               address: ADDRESS,
             },
@@ -305,7 +305,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'GET',
-            url: 'api/v2/getWalletInformation',
+            url: 'api/v1/getWalletInformation',
             params: {
               address: SECOND_ADDRESS,
             },
@@ -315,7 +315,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'POST',
-            url: 'api/v2/estimateFee',
+            url: 'api/v1/estimateFee',
             data: {
               address: ADDRESS,
               body: sinon.match.string,
@@ -351,7 +351,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'GET',
-            url: 'api/v2/getWalletInformation',
+            url: 'api/v1/getWalletInformation',
             params: {
               address: ADDRESS,
             },
@@ -361,7 +361,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'GET',
-            url: 'api/v2/getWalletInformation',
+            url: 'api/v1/getWalletInformation',
             params: {
               address: SECOND_ADDRESS,
             },
@@ -371,7 +371,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'POST',
-            url: 'api/v2/estimateFee',
+            url: 'api/v1/estimateFee',
             data: {
               address: ADDRESS,
               body: sinon.match.string,
@@ -412,7 +412,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'GET',
-            url: 'api/v2/getWalletInformation',
+            url: 'api/v1/getWalletInformation',
             params: {
               address: ADDRESS,
             },
@@ -422,7 +422,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'GET',
-            url: 'api/v2/getWalletInformation',
+            url: 'api/v1/getWalletInformation',
             params: {
               address: SECOND_ADDRESS,
             },
@@ -432,7 +432,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'POST',
-            url: 'api/v2/estimateFee',
+            url: 'api/v1/estimateFee',
             data: {
               address: ADDRESS,
               body: sinon.match.string,
@@ -473,7 +473,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'GET',
-            url: 'api/v2/getWalletInformation',
+            url: 'api/v1/getWalletInformation',
             params: {
               address: ADDRESS,
             },
@@ -483,7 +483,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'GET',
-            url: 'api/v2/getWalletInformation',
+            url: 'api/v1/getWalletInformation',
             params: {
               address: SECOND_ADDRESS,
             },
@@ -493,7 +493,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'POST',
-            url: 'api/v2/estimateFee',
+            url: 'api/v1/estimateFee',
             data: {
               address: ADDRESS,
               body: sinon.match.string,
@@ -537,7 +537,7 @@ describe('Ton Wallet', () => {
           .withArgs({
             seed: 'device',
             method: 'GET',
-            url: 'api/v2/getWalletInformation',
+            url: 'api/v1/getWalletInformation',
             params: {
               address: ADDRESS,
             },
@@ -605,7 +605,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: ADDRESS,
           },
@@ -615,7 +615,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: SECOND_ADDRESS,
           },
@@ -625,7 +625,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'POST',
-          url: 'api/v2/estimateFee',
+          url: 'api/v1/estimateFee',
           data: {
             address: ADDRESS,
             body: sinon.match.string,
@@ -660,7 +660,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: ADDRESS,
           },
@@ -670,7 +670,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: SECOND_ADDRESS,
           },
@@ -680,7 +680,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'POST',
-          url: 'api/v2/estimateFee',
+          url: 'api/v1/estimateFee',
           data: {
             address: ADDRESS,
             body: sinon.match.string,
@@ -717,7 +717,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: ADDRESS,
           },
@@ -727,7 +727,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: SECOND_ADDRESS,
           },
@@ -737,7 +737,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'POST',
-          url: 'api/v2/estimateFee',
+          url: 'api/v1/estimateFee',
           data: {
             address: ADDRESS,
             body: sinon.match.string,
@@ -768,7 +768,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: ADDRESS,
           },
@@ -778,7 +778,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: SECOND_ADDRESS,
           },
@@ -788,7 +788,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'POST',
-          url: 'api/v2/estimateFee',
+          url: 'api/v1/estimateFee',
           data: {
             address: ADDRESS,
             body: sinon.match.string,
@@ -821,7 +821,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: ADDRESS,
           },
@@ -831,7 +831,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: SECOND_ADDRESS,
           },
@@ -841,7 +841,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'POST',
-          url: 'api/v2/estimateFee',
+          url: 'api/v1/estimateFee',
           data: {
             address: ADDRESS,
             body: sinon.match.string,
@@ -861,7 +861,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'POST',
-          url: 'api/v2/sendBoc',
+          url: 'api/v1/sendBoc',
           data: {
             boc: sinon.match.string,
           },
@@ -889,7 +889,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getWalletInformation',
+          url: 'api/v1/getWalletInformation',
           params: {
             address: ADDRESS,
           },
@@ -899,7 +899,7 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
-          url: 'api/v2/getTransactions',
+          url: 'api/v1/getTransactions',
           params: {
             address: ADDRESS,
             lt: undefined,
