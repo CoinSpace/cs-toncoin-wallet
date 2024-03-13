@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { Amount } from '@coinspace/cs-common';
-import Wallet from '@coinspace/cs-ton-wallet';
+import Wallet from '@coinspace/cs-toncoin-wallet';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { hex } from '@scure/base';
