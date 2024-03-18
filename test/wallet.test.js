@@ -597,6 +597,23 @@ describe('Ton Wallet', () => {
         });
       });
     });
+
+    describe('validateDerivationPath', () => {
+      let wallet;
+      beforeEach(async () => {
+        wallet = new Wallet({
+          ...defaultOptions,
+        });
+      });
+
+      it('valid path', () => {
+        assert.equal(wallet.validateDerivationPath("m/44'/607'/1'/2'"), true);
+      });
+
+      it('invalid path', () => {
+        assert.equal(wallet.validateDerivationPath("m/44'/607'/1/2'"), false);
+      });
+    });
   });
 
   describe('estimateTransactionFee', () => {
