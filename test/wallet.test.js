@@ -954,14 +954,13 @@ describe('Ton Wallet', () => {
     it('unalias E', async () => {
       assert.deepEqual(await wallet.unalias('EQBj8pDDn0TAuiZ_EI4npXVtNJTUrdAtRpit6UPiy0cnWi7m'), {
         address: 'EQBj8pDDn0TAuiZ_EI4npXVtNJTUrdAtRpit6UPiy0cnWi7m',
-        alias: 'UQBj8pDDn0TAuiZ_EI4npXVtNJTUrdAtRpit6UPiy0cnWnMj',
       });
     });
 
     it('unalias U', async () => {
       assert.deepEqual(await wallet.unalias('UQBj8pDDn0TAuiZ_EI4npXVtNJTUrdAtRpit6UPiy0cnWnMj'), {
-        address: 'UQBj8pDDn0TAuiZ_EI4npXVtNJTUrdAtRpit6UPiy0cnWnMj',
-        alias: 'EQBj8pDDn0TAuiZ_EI4npXVtNJTUrdAtRpit6UPiy0cnWi7m',
+        address: 'EQBj8pDDn0TAuiZ_EI4npXVtNJTUrdAtRpit6UPiy0cnWi7m',
+        alias: 'UQBj8pDDn0TAuiZ_EI4npXVtNJTUrdAtRpit6UPiy0cnWnMj',
       });
     });
 
