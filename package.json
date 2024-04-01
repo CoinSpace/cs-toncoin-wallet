@@ -1,6 +1,6 @@
 {
   "name": "@coinspace/cs-toncoin-wallet",
-  "version": "0.0.8",
+  "version": "1.0.0",
   "repository": "https://github.com/CoinSpace/cs-toncoin-wallet",
   "description": "Toncoin Wallet for Coin Wallet",
   "author": "Coin Wallet <support@coin.space> (https://coin.space/)",
