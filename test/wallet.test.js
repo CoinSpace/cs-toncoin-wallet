@@ -28,6 +28,7 @@ const SEED_PUB_KEY = {
   },
 };
 const ADDRESS = 'UQBa1jalGfCwrast5gg_PB-U2cdCHg2mPy2gUO-_4u_vuboO';
+const JETTON_WALLET_ADDRESS = 'EQB1asV3k_H0eCB3NIIe-5YpLbeJvQ9HAiO-c6ECljhZ6Y4V';
 const PRIVATE_KEY = '24c3f92d74f59cc10f0918dc0660c3caaea002a6ceb0f72f0f4b5d0942babae63551dd99b8e909ffa2388f92c67357e1840b3a6d93f6031119f2286b4fac43eb';
 const SECOND_ADDRESS = 'UQBj8pDDn0TAuiZ_EI4npXVtNJTUrdAtRpit6UPiy0cnWnMj';
 const TON_PRICE = 2.14;
@@ -41,34 +42,74 @@ const toncoin = {
   type: 'coin',
   decimals: 9,
 };
-const defaultOptions = {
-  crypto: toncoin,
-  platform: toncoin,
-  cache: { get() {}, set() {} },
-  settings: {},
-  request(...args) { console.log(args); },
-  apiNode: 'node',
-  storage: { get() {}, set() {}, save() {} },
+const tetherAtToncoin = {
+  _id: 'tether@toncoin',
+  asset: 'tether',
+  platform: 'toncoin',
+  type: 'token',
+  address: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs',
+  decimals: 6,
 };
+let defaultOptionsCoin;
+let defaultOptionsToken;
 
 describe('Ton Wallet', () => {
+  beforeEach(() => {
+    defaultOptionsCoin = {
+      crypto: toncoin,
+      platform: toncoin,
+      cache: { get() {}, set() {} },
+      settings: {},
+      request(...args) { console.log(args); },
+      apiNode: 'node',
+      storage: { get() {}, set() {}, save() {} },
+    };
+
+    defaultOptionsToken = {
+      crypto: tetherAtToncoin,
+      platform: toncoin,
+      cache: { get() {}, set() {} },
+      settings: {},
+      request(...args) { console.log(args); },
+      apiNode: 'node',
+      storage: { get() {}, set() {}, save() {} },
+    };
+  });
+
   afterEach(() => {
     sinon.restore();
   });
 
   describe('constructor', () => {
-    it('create wallet instance', () => {
+    it('create wallet instance (coin)', () => {
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       assert.equal(wallet.state, Wallet.STATE_CREATED);
+    });
+
+    it('create wallet instance (token)', () => {
+      const wallet = new Wallet({
+        ...defaultOptionsToken,
+      });
+      assert.equal(wallet.state, Wallet.STATE_CREATED);
+      assert.equal(wallet.tokenUrl, 'https://tonscan.org/jetton/EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs');
     });
   });
 
   describe('create wallet', () => {
-    it('should create new wallet with seed', async () => {
+    it('should create new wallet with seed (coin)', async () => {
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
+      });
+      await wallet.create(SEED);
+      assert.equal(wallet.state, Wallet.STATE_INITIALIZED);
+      assert.equal(wallet.address, ADDRESS);
+    });
+
+    it('should create new wallet with seed (token)', async () => {
+      const wallet = new Wallet({
+        ...defaultOptionsToken,
       });
       await wallet.create(SEED);
       assert.equal(wallet.state, Wallet.STATE_INITIALIZED);
@@ -77,7 +118,7 @@ describe('Ton Wallet', () => {
 
     it('should fails without seed', async () => {
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await assert.rejects(async () => {
         await wallet.create();
@@ -89,9 +130,18 @@ describe('Ton Wallet', () => {
   });
 
   describe('open wallet', () => {
-    it('should open wallet with public key', async () => {
+    it('should open wallet with public key (coin)', async () => {
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
+      });
+      await wallet.open(SEED_PUB_KEY);
+      assert.equal(wallet.state, Wallet.STATE_INITIALIZED);
+      assert.equal(wallet.address, ADDRESS);
+    });
+
+    it('should open wallet with public key (token)', async () => {
+      const wallet = new Wallet({
+        ...defaultOptionsToken,
       });
       await wallet.open(SEED_PUB_KEY);
       assert.equal(wallet.state, Wallet.STATE_INITIALIZED);
@@ -100,7 +150,7 @@ describe('Ton Wallet', () => {
 
     it('should fails without public key', async () => {
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await assert.rejects(async () => {
         await wallet.open();
@@ -112,11 +162,21 @@ describe('Ton Wallet', () => {
   });
 
   describe('storage', () => {
-    it('should load initial balance from storage', async () => {
-      sinon.stub(defaultOptions.storage, 'get')
+    it('should load initial balance from storage (coin)', async () => {
+      sinon.stub(defaultOptionsCoin.storage, 'get')
         .withArgs('balance').returns('1234567890');
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
+      });
+      await wallet.open(SEED_PUB_KEY);
+      assert.equal(wallet.balance.value, 1234567890n);
+    });
+
+    it('should load initial balance from storage (token)', async () => {
+      sinon.stub(defaultOptionsToken.storage, 'get')
+        .withArgs('balance').returns('1234567890');
+      const wallet = new Wallet({
+        ...defaultOptionsToken,
       });
       await wallet.open(SEED_PUB_KEY);
       assert.equal(wallet.balance.value, 1234567890n);
@@ -124,8 +184,8 @@ describe('Ton Wallet', () => {
   });
 
   describe('load', () => {
-    it('should load wallet', async () => {
-      sinon.stub(defaultOptions, 'request')
+    it('should load wallet (coin)', async () => {
+      sinon.stub(defaultOptionsCoin, 'request')
         .withArgs({
           seed: 'device',
           method: 'GET',
@@ -136,11 +196,11 @@ describe('Ton Wallet', () => {
           baseURL: 'node',
           headers: sinon.match.any,
         }).resolves(FIXTURES['getWalletInformation']);
-      const storage = sinon.mock(defaultOptions.storage);
+      const storage = sinon.mock(defaultOptionsCoin.storage);
       storage.expects('set').once().withArgs('balance', '4936421995');
       storage.expects('save').once();
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.open(SEED_PUB_KEY);
       await wallet.load();
@@ -149,8 +209,8 @@ describe('Ton Wallet', () => {
       storage.verify();
     });
 
-    it('should load wallet (uninitialized)', async () => {
-      sinon.stub(defaultOptions, 'request')
+    it('should load wallet (coin uninitialized)', async () => {
+      sinon.stub(defaultOptionsCoin, 'request')
         .withArgs({
           seed: 'device',
           method: 'GET',
@@ -161,11 +221,11 @@ describe('Ton Wallet', () => {
           baseURL: 'node',
           headers: sinon.match.any,
         }).resolves(FIXTURES['getWalletInformation-uninitialized']);
-      const storage = sinon.mock(defaultOptions.storage);
+      const storage = sinon.mock(defaultOptionsCoin.storage);
       storage.expects('set').once().withArgs('balance', '0');
       storage.expects('save').once();
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.open(SEED_PUB_KEY);
       await wallet.load();
@@ -174,8 +234,54 @@ describe('Ton Wallet', () => {
       storage.verify();
     });
 
+    it('should load wallet (token)', async () => {
+      sinon.stub(defaultOptionsToken, 'request')
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getWalletInformation',
+          params: {
+            address: ADDRESS,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getWalletInformation'])
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getJettonWalletAddress',
+          params: {
+            address: ADDRESS,
+            jetton: tetherAtToncoin.address,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getJettonWalletAddress'])
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getJettonData',
+          params: {
+            address: JETTON_WALLET_ADDRESS,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getJettonData']);
+      const storage = sinon.mock(defaultOptionsToken.storage);
+      storage.expects('set').once().withArgs('balance', '7000000');
+      storage.expects('save').once();
+      const wallet = new Wallet({
+        ...defaultOptionsToken,
+      });
+      await wallet.open(SEED_PUB_KEY);
+      await wallet.load();
+      assert.equal(wallet.state, Wallet.STATE_LOADED);
+      assert.equal(wallet.balance.value, 7000000n);
+      storage.verify();
+    });
+
     it('should set STATE_ERROR on error', async () => {
-      sinon.stub(defaultOptions, 'request')
+      sinon.stub(defaultOptionsCoin, 'request')
         .withArgs({
           seed: 'device',
           method: 'GET',
@@ -187,7 +293,7 @@ describe('Ton Wallet', () => {
           headers: sinon.match.any,
         }).rejects();
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.open(SEED_PUB_KEY);
       await assert.rejects(async () => {
@@ -200,7 +306,7 @@ describe('Ton Wallet', () => {
   describe('getPublicKey', () => {
     it('should export public key', async () => {
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.create(SEED);
       const publicKey = wallet.getPublicKey();
@@ -209,12 +315,12 @@ describe('Ton Wallet', () => {
 
     it('public key is valid', async () => {
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.create(SEED);
       const publicKey = wallet.getPublicKey();
       const secondWalet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       secondWalet.open(publicKey);
       assert.equal(wallet.address, secondWalet.address);
@@ -224,7 +330,7 @@ describe('Ton Wallet', () => {
   describe('getPrivateKey', () => {
     it('should export private key', async () => {
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.create(SEED);
       const privateKey = wallet.getPrivateKey(SEED);
@@ -239,7 +345,7 @@ describe('Ton Wallet', () => {
     describe('validateAddress', () => {
       let wallet;
       beforeEach(async () => {
-        sinon.stub(defaultOptions, 'request')
+        sinon.stub(defaultOptionsCoin, 'request')
           .withArgs({
             seed: 'device',
             method: 'GET',
@@ -251,7 +357,7 @@ describe('Ton Wallet', () => {
             headers: sinon.match.any,
           }).resolves(FIXTURES['getWalletInformation']);
         wallet = new Wallet({
-          ...defaultOptions,
+          ...defaultOptionsCoin,
         });
         await wallet.open(SEED_PUB_KEY);
         await wallet.load();
@@ -289,25 +395,15 @@ describe('Ton Wallet', () => {
       });
     });
 
-    describe('validateAmount', () => {
+    describe('validateAmount (coin)', () => {
       it('should be valid amount', async () => {
-        sinon.stub(defaultOptions, 'request')
+        sinon.stub(defaultOptionsCoin, 'request')
           .withArgs({
             seed: 'device',
             method: 'GET',
             url: 'api/v1/getWalletInformation',
             params: {
               address: ADDRESS,
-            },
-            baseURL: 'node',
-            headers: sinon.match.any,
-          }).resolves(FIXTURES['getWalletInformation'])
-          .withArgs({
-            seed: 'device',
-            method: 'GET',
-            url: 'api/v1/getWalletInformation',
-            params: {
-              address: SECOND_ADDRESS,
             },
             baseURL: 'node',
             headers: sinon.match.any,
@@ -333,7 +429,7 @@ describe('Ton Wallet', () => {
             params: { crypto: 'toncoin@toncoin' },
           }).resolves(FIXTURES['csfee']);
         const wallet = new Wallet({
-          ...defaultOptions,
+          ...defaultOptionsCoin,
         });
         await wallet.open(SEED_PUB_KEY);
         await wallet.load();
@@ -347,7 +443,7 @@ describe('Ton Wallet', () => {
       });
 
       it('throw on uninitialized account', async () => {
-        sinon.stub(defaultOptions, 'request')
+        sinon.stub(defaultOptionsCoin, 'request')
           .withArgs({
             seed: 'device',
             method: 'GET',
@@ -358,16 +454,6 @@ describe('Ton Wallet', () => {
             baseURL: 'node',
             headers: sinon.match.any,
           }).resolves(FIXTURES['getWalletInformation-uninitialized'])
-          .withArgs({
-            seed: 'device',
-            method: 'GET',
-            url: 'api/v1/getWalletInformation',
-            params: {
-              address: SECOND_ADDRESS,
-            },
-            baseURL: 'node',
-            headers: sinon.match.any,
-          }).resolves(FIXTURES['getWalletInformation'])
           .withArgs({
             seed: 'device',
             method: 'POST',
@@ -389,7 +475,7 @@ describe('Ton Wallet', () => {
             params: { crypto: 'toncoin@toncoin' },
           }).resolves(FIXTURES['csfee']);
         const wallet = new Wallet({
-          ...defaultOptions,
+          ...defaultOptionsCoin,
         });
         await wallet.open(SEED_PUB_KEY);
         await wallet.load();
@@ -408,23 +494,13 @@ describe('Ton Wallet', () => {
       });
 
       it('throw on small amount', async () => {
-        sinon.stub(defaultOptions, 'request')
+        sinon.stub(defaultOptionsCoin, 'request')
           .withArgs({
             seed: 'device',
             method: 'GET',
             url: 'api/v1/getWalletInformation',
             params: {
               address: ADDRESS,
-            },
-            baseURL: 'node',
-            headers: sinon.match.any,
-          }).resolves(FIXTURES['getWalletInformation'])
-          .withArgs({
-            seed: 'device',
-            method: 'GET',
-            url: 'api/v1/getWalletInformation',
-            params: {
-              address: SECOND_ADDRESS,
             },
             baseURL: 'node',
             headers: sinon.match.any,
@@ -450,7 +526,7 @@ describe('Ton Wallet', () => {
             params: { crypto: 'toncoin@toncoin' },
           }).resolves(FIXTURES['csfee']);
         const wallet = new Wallet({
-          ...defaultOptions,
+          ...defaultOptionsCoin,
         });
         await wallet.open(SEED_PUB_KEY);
         await wallet.load();
@@ -469,23 +545,13 @@ describe('Ton Wallet', () => {
       });
 
       it('throw on big amount', async () => {
-        sinon.stub(defaultOptions, 'request')
+        sinon.stub(defaultOptionsCoin, 'request')
           .withArgs({
             seed: 'device',
             method: 'GET',
             url: 'api/v1/getWalletInformation',
             params: {
               address: ADDRESS,
-            },
-            baseURL: 'node',
-            headers: sinon.match.any,
-          }).resolves(FIXTURES['getWalletInformation'])
-          .withArgs({
-            seed: 'device',
-            method: 'GET',
-            url: 'api/v1/getWalletInformation',
-            params: {
-              address: SECOND_ADDRESS,
             },
             baseURL: 'node',
             headers: sinon.match.any,
@@ -511,7 +577,7 @@ describe('Ton Wallet', () => {
             params: { crypto: 'toncoin@toncoin' },
           }).resolves(FIXTURES['csfee']);
         const wallet = new Wallet({
-          ...defaultOptions,
+          ...defaultOptionsCoin,
         });
         await wallet.open(SEED_PUB_KEY);
         await wallet.load();
@@ -530,10 +596,214 @@ describe('Ton Wallet', () => {
       });
     });
 
+    describe('validateAmount (token)', () => {
+      it('should be valid amount', async () => {
+        sinon.stub(defaultOptionsToken, 'request')
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getWalletInformation',
+            params: {
+              address: ADDRESS,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getWalletInformation'])
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getJettonWalletAddress',
+            params: {
+              address: ADDRESS,
+              jetton: tetherAtToncoin.address,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getJettonWalletAddress'])
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getJettonData',
+            params: {
+              address: JETTON_WALLET_ADDRESS,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getJettonData']);
+        const wallet = new Wallet({
+          ...defaultOptionsToken,
+        });
+        await wallet.open(SEED_PUB_KEY);
+        await wallet.load();
+
+        const valid = await wallet.validateAmount({
+          address: SECOND_ADDRESS,
+          amount: new Amount(1_000000n, wallet.crypto.decimals),
+        });
+        assert.ok(valid);
+      });
+
+      it('throw on uninitialized account', async () => {
+        sinon.stub(defaultOptionsToken, 'request')
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getWalletInformation',
+            params: {
+              address: ADDRESS,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getWalletInformation-uninitialized'])
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getJettonWalletAddress',
+            params: {
+              address: ADDRESS,
+              jetton: tetherAtToncoin.address,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getJettonWalletAddress'])
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getJettonData',
+            params: {
+              address: JETTON_WALLET_ADDRESS,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getJettonData']);
+        const wallet = new Wallet({
+          ...defaultOptionsToken,
+        });
+        await wallet.open(SEED_PUB_KEY);
+        await wallet.load();
+
+        await assert.rejects(async () => {
+          await wallet.validateAmount({
+            address: SECOND_ADDRESS,
+            amount: new Amount(123n, wallet.crypto.decimals),
+            price: TON_PRICE,
+          });
+        }, {
+          name: 'InsufficientCoinForTokenTransactionError',
+          message: 'Insufficient funds for token transaction',
+          amount: new Amount(50000000n, wallet.platform.decimals),
+        });
+      });
+
+      it('throw on small amount', async () => {
+        sinon.stub(defaultOptionsToken, 'request')
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getWalletInformation',
+            params: {
+              address: ADDRESS,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getWalletInformation'])
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getJettonWalletAddress',
+            params: {
+              address: ADDRESS,
+              jetton: tetherAtToncoin.address,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getJettonWalletAddress'])
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getJettonData',
+            params: {
+              address: JETTON_WALLET_ADDRESS,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getJettonData']);
+        const wallet = new Wallet({
+          ...defaultOptionsToken,
+        });
+        await wallet.open(SEED_PUB_KEY);
+        await wallet.load();
+
+        await assert.rejects(async () => {
+          await wallet.validateAmount({
+            address: SECOND_ADDRESS,
+            amount: new Amount(0n, wallet.crypto.decimals),
+            price: TON_PRICE,
+          });
+        }, {
+          name: 'SmallAmountError',
+          message: 'Small amount',
+          amount: new Amount(1n, wallet.crypto.decimals),
+        });
+      });
+
+      it('throw on big amount', async () => {
+        sinon.stub(defaultOptionsToken, 'request')
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getWalletInformation',
+            params: {
+              address: ADDRESS,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getWalletInformation'])
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getJettonWalletAddress',
+            params: {
+              address: ADDRESS,
+              jetton: tetherAtToncoin.address,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getJettonWalletAddress'])
+          .withArgs({
+            seed: 'device',
+            method: 'GET',
+            url: 'api/v1/getJettonData',
+            params: {
+              address: JETTON_WALLET_ADDRESS,
+            },
+            baseURL: 'node',
+            headers: sinon.match.any,
+          }).resolves(FIXTURES['getJettonData']);
+        const wallet = new Wallet({
+          ...defaultOptionsToken,
+        });
+        await wallet.open(SEED_PUB_KEY);
+        await wallet.load();
+
+        await assert.rejects(async () => {
+          await wallet.validateAmount({
+            address: SECOND_ADDRESS,
+            amount: new Amount(200_000000n, wallet.crypto.decimals),
+            price: TON_PRICE,
+          });
+        }, {
+          name: 'BigAmountError',
+          message: 'Big amount',
+          amount: new Amount(7_000000n, wallet.crypto.decimals),
+        });
+      });
+    });
+
     describe('validateMeta', () => {
       let wallet;
       beforeEach(async () => {
-        sinon.stub(defaultOptions, 'request')
+        sinon.stub(defaultOptionsCoin, 'request')
           .withArgs({
             seed: 'device',
             method: 'GET',
@@ -545,7 +815,7 @@ describe('Ton Wallet', () => {
             headers: sinon.match.any,
           }).resolves(FIXTURES['getWalletInformation']);
         wallet = new Wallet({
-          ...defaultOptions,
+          ...defaultOptionsCoin,
         });
         await wallet.open(SEED_PUB_KEY);
         await wallet.load();
@@ -602,7 +872,7 @@ describe('Ton Wallet', () => {
       let wallet;
       beforeEach(async () => {
         wallet = new Wallet({
-          ...defaultOptions,
+          ...defaultOptionsCoin,
         });
       });
 
@@ -617,24 +887,14 @@ describe('Ton Wallet', () => {
   });
 
   describe('estimateTransactionFee', () => {
-    it('should estimate transaction fee', async () => {
-      sinon.stub(defaultOptions, 'request')
+    it('should estimate transaction fee (coin)', async () => {
+      sinon.stub(defaultOptionsCoin, 'request')
         .withArgs({
           seed: 'device',
           method: 'GET',
           url: 'api/v1/getWalletInformation',
           params: {
             address: ADDRESS,
-          },
-          baseURL: 'node',
-          headers: sinon.match.any,
-        }).resolves(FIXTURES['getWalletInformation'])
-        .withArgs({
-          seed: 'device',
-          method: 'GET',
-          url: 'api/v1/getWalletInformation',
-          params: {
-            address: SECOND_ADDRESS,
           },
           baseURL: 'node',
           headers: sinon.match.any,
@@ -660,7 +920,7 @@ describe('Ton Wallet', () => {
           params: { crypto: 'toncoin@toncoin' },
         }).resolves(FIXTURES['csfee']);
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.open(SEED_PUB_KEY);
       await wallet.load();
@@ -672,8 +932,8 @@ describe('Ton Wallet', () => {
       assert.equal(fee.value, 146302140n);
     });
 
-    it('should estimate transaction fee (uninitialized)', async () => {
-      sinon.stub(defaultOptions, 'request')
+    it('should estimate transaction fee (coin uninitialized)', async () => {
+      sinon.stub(defaultOptionsCoin, 'request')
         .withArgs({
           seed: 'device',
           method: 'GET',
@@ -684,16 +944,6 @@ describe('Ton Wallet', () => {
           baseURL: 'node',
           headers: sinon.match.any,
         }).resolves(FIXTURES['getWalletInformation-uninitialized'])
-        .withArgs({
-          seed: 'device',
-          method: 'GET',
-          url: 'api/v1/getWalletInformation',
-          params: {
-            address: SECOND_ADDRESS,
-          },
-          baseURL: 'node',
-          headers: sinon.match.any,
-        }).resolves(FIXTURES['getWalletInformation'])
         .withArgs({
           seed: 'device',
           method: 'POST',
@@ -715,7 +965,7 @@ describe('Ton Wallet', () => {
           params: { crypto: 'toncoin@toncoin' },
         }).resolves(FIXTURES['csfee']);
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.open(SEED_PUB_KEY);
       await wallet.load();
@@ -726,11 +976,9 @@ describe('Ton Wallet', () => {
       });
       assert.equal(fee.value, 146302140n);
     });
-  });
 
-  describe('estimateMaxAmount', () => {
-    it('should correct estimate max amount', async () => {
-      sinon.stub(defaultOptions, 'request')
+    it('should estimate transaction fee (token)', async () => {
+      sinon.stub(defaultOptionsToken, 'request')
         .withArgs({
           seed: 'device',
           method: 'GET',
@@ -744,9 +992,46 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
+          url: 'api/v1/getJettonWalletAddress',
+          params: {
+            address: ADDRESS,
+            jetton: tetherAtToncoin.address,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getJettonWalletAddress'])
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getJettonData',
+          params: {
+            address: JETTON_WALLET_ADDRESS,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getJettonData']);
+      const wallet = new Wallet({
+        ...defaultOptionsToken,
+      });
+      await wallet.open(SEED_PUB_KEY);
+      await wallet.load();
+      const fee = await wallet.estimateTransactionFee({
+        address: SECOND_ADDRESS,
+        amount: new Amount(1n, wallet.crypto.decimals),
+      });
+      assert.equal(fee.value, 50000000n);
+    });
+  });
+
+  describe('estimateMaxAmount', () => {
+    it('should correct estimate max amount (coin)', async () => {
+      sinon.stub(defaultOptionsCoin, 'request')
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
           url: 'api/v1/getWalletInformation',
           params: {
-            address: SECOND_ADDRESS,
+            address: ADDRESS,
           },
           baseURL: 'node',
           headers: sinon.match.any,
@@ -772,7 +1057,7 @@ describe('Ton Wallet', () => {
           params: { crypto: 'toncoin@toncoin' },
         }).resolves(FIXTURES['csfee']);
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.open(SEED_PUB_KEY);
       await wallet.load();
@@ -780,8 +1065,8 @@ describe('Ton Wallet', () => {
       assert.equal(maxAmount.value, 4790119855n);
     });
 
-    it('should estimate max amount to be 0', async () => {
-      sinon.stub(defaultOptions, 'request')
+    it('should estimate max amount to be 0 (coin)', async () => {
+      sinon.stub(defaultOptionsCoin, 'request')
         .withArgs({
           seed: 'device',
           method: 'GET',
@@ -792,16 +1077,6 @@ describe('Ton Wallet', () => {
           baseURL: 'node',
           headers: sinon.match.any,
         }).resolves(FIXTURES['getWalletInformation-uninitialized'])
-        .withArgs({
-          seed: 'device',
-          method: 'GET',
-          url: 'api/v1/getWalletInformation',
-          params: {
-            address: SECOND_ADDRESS,
-          },
-          baseURL: 'node',
-          headers: sinon.match.any,
-        }).resolves(FIXTURES['getWalletInformation'])
         .withArgs({
           seed: 'device',
           method: 'POST',
@@ -823,18 +1098,16 @@ describe('Ton Wallet', () => {
           params: { crypto: 'toncoin@toncoin' },
         }).resolves(FIXTURES['csfee']);
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.open(SEED_PUB_KEY);
       await wallet.load();
       const maxAmount = await wallet.estimateMaxAmount({ address: SECOND_ADDRESS, price: TON_PRICE });
       assert.equal(maxAmount.value, 0n);
     });
-  });
 
-  describe('createTransaction', () => {
-    it('should create valid transaction', async () => {
-      sinon.stub(defaultOptions, 'request')
+    it('should correct estimate max amount (token)', async () => {
+      sinon.stub(defaultOptionsToken, 'request')
         .withArgs({
           seed: 'device',
           method: 'GET',
@@ -848,9 +1121,43 @@ describe('Ton Wallet', () => {
         .withArgs({
           seed: 'device',
           method: 'GET',
+          url: 'api/v1/getJettonWalletAddress',
+          params: {
+            address: ADDRESS,
+            jetton: tetherAtToncoin.address,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getJettonWalletAddress'])
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getJettonData',
+          params: {
+            address: JETTON_WALLET_ADDRESS,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getJettonData']);
+      const wallet = new Wallet({
+        ...defaultOptionsToken,
+      });
+      await wallet.open(SEED_PUB_KEY);
+      await wallet.load();
+      const maxAmount = await wallet.estimateMaxAmount({ address: SECOND_ADDRESS });
+      assert.equal(maxAmount.value, 7000000n);
+    });
+  });
+
+  describe('createTransaction', () => {
+    it('should create valid transaction (coin)', async () => {
+      sinon.stub(defaultOptionsCoin, 'request')
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
           url: 'api/v1/getWalletInformation',
           params: {
-            address: SECOND_ADDRESS,
+            address: ADDRESS,
           },
           baseURL: 'node',
           headers: sinon.match.any,
@@ -886,7 +1193,7 @@ describe('Ton Wallet', () => {
           headers: sinon.match.any,
         }).resolves({ ok: true });
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.open(SEED_PUB_KEY);
       await wallet.load();
@@ -898,11 +1205,67 @@ describe('Ton Wallet', () => {
       }, SEED);
       assert.equal(wallet.balance.value, 3_790119855n);
     });
+
+    it('should create valid transaction (token)', async () => {
+      sinon.stub(defaultOptionsToken, 'request')
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getWalletInformation',
+          params: {
+            address: ADDRESS,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getWalletInformation'])
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getJettonWalletAddress',
+          params: {
+            address: ADDRESS,
+            jetton: tetherAtToncoin.address,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getJettonWalletAddress'])
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getJettonData',
+          params: {
+            address: JETTON_WALLET_ADDRESS,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getJettonData'])
+        .withArgs({
+          seed: 'device',
+          method: 'POST',
+          url: 'api/v1/sendBoc',
+          data: {
+            boc: sinon.match.string,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves({ ok: true });
+      const wallet = new Wallet({
+        ...defaultOptionsToken,
+      });
+      await wallet.open(SEED_PUB_KEY);
+      await wallet.load();
+
+      await wallet.createTransaction({
+        address: SECOND_ADDRESS,
+        amount: new Amount(1_000000, wallet.crypto.decimals),
+      }, SEED);
+      assert.equal(wallet.balance.value, 6_000000n);
+    });
   });
 
   describe('loadTransactions', () => {
     it('should load transactions (coin)', async () => {
-      sinon.stub(defaultOptions, 'request')
+      sinon.stub(defaultOptionsCoin, 'request')
         .withArgs({
           seed: 'device',
           method: 'GET',
@@ -927,7 +1290,7 @@ describe('Ton Wallet', () => {
           headers: sinon.match.any,
         }).resolves(FIXTURES['getTransactions']);
       const wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
       await wallet.open(SEED_PUB_KEY);
       await wallet.load();
@@ -940,6 +1303,67 @@ describe('Ton Wallet', () => {
         hash: 'rH3RZieivA2wiQEedqoF4wGtRyscwGpnEScblXra6CA=',
       });
     });
+
+    it('should load transactions (token)', async () => {
+      sinon.stub(defaultOptionsToken, 'request')
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getWalletInformation',
+          params: {
+            address: ADDRESS,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getWalletInformation'])
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getJettonWalletAddress',
+          params: {
+            address: ADDRESS,
+            jetton: tetherAtToncoin.address,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getJettonWalletAddress'])
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getJettonData',
+          params: {
+            address: JETTON_WALLET_ADDRESS,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getJettonData'])
+        .withArgs({
+          seed: 'device',
+          method: 'GET',
+          url: 'api/v1/getTransactions',
+          params: {
+            address: JETTON_WALLET_ADDRESS,
+            lt: undefined,
+            hash: undefined,
+            limit: 10,
+          },
+          baseURL: 'node',
+          headers: sinon.match.any,
+        }).resolves(FIXTURES['getTransactions-jetton']);
+      const wallet = new Wallet({
+        ...defaultOptionsToken,
+      });
+      await wallet.open(SEED_PUB_KEY);
+      await wallet.load();
+
+      const res = await wallet.loadTransactions();
+      assert.equal(res.hasMore, false);
+      assert.equal(res.transactions.length, 3);
+      assert.deepEqual(res.cursor, {
+        lt: '23462714000003',
+        hash: 'FIP6OF6smN4OtN31s3/Skwj1p6+rwaZI/FPDxJqpr3M=',
+      });
+    });
   });
 
   describe('unalias', () => {
@@ -947,7 +1371,7 @@ describe('Ton Wallet', () => {
 
     beforeEach(() => {
       wallet = new Wallet({
-        ...defaultOptions,
+        ...defaultOptionsCoin,
       });
     });
 
