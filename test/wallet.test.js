@@ -1392,4 +1392,22 @@ describe('Ton Wallet', () => {
       assert.deepEqual(await wallet.unalias('foobar'), undefined);
     });
   });
+
+  describe('settings', () => {
+    it('settings supported for coin', async () => {
+      const wallet = new Wallet({
+        ...defaultOptionsCoin,
+      });
+
+      assert.equal(wallet.isSettingsSupported, true);
+    });
+
+    it('settings not supported for token', async () => {
+      const wallet = new Wallet({
+        ...defaultOptionsToken,
+      });
+
+      assert.equal(wallet.isSettingsSupported, false);
+    });
+  });
 });
