@@ -23,7 +23,7 @@
     "ed25519-keygen": "^0.4.10"
   },
   "peerDependencies": {
-    "@coinspace/cs-common": "^1.1.2"
+    "@coinspace/cs-common": "^1.1.4"
   },
   "devDependencies": {
     "eslint": "^8.0.0",

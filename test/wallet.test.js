@@ -689,8 +689,8 @@ describe('Ton Wallet', () => {
             price: TON_PRICE,
           });
         }, {
-          name: 'InsufficientCoinForTokenTransactionError',
-          message: 'Insufficient funds for token transaction',
+          name: 'InsufficientCoinForTransactionFeeError',
+          message: 'Insufficient funds to pay the transaction fee',
           amount: new Amount(50000000n, wallet.platform.decimals),
         });
       });
