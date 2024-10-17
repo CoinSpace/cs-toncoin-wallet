@@ -1,2 +1,2 @@
-export { default } from './lib/TonWallet.js';
+export { default, TonTransaction, JettonTransaction } from './lib/TonWallet.js';
 export * from './lib/errors.js';

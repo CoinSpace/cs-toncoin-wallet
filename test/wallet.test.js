@@ -1,11 +1,12 @@
 /* eslint-disable max-len */
-import { Amount } from '@coinspace/cs-common';
-import Wallet from '@coinspace/cs-toncoin-wallet';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { hex } from '@scure/base';
 import path from 'node:path';
 import sinon from 'sinon';
+
+import { Amount } from '@coinspace/cs-common';
+import Wallet, { TonTransaction } from '@coinspace/cs-toncoin-wallet';
 
 async function loadFixtires() {
   const fixtures = {};
@@ -1297,7 +1298,9 @@ describe('Ton Wallet', () => {
 
       const res = await wallet.loadTransactions();
       assert.equal(res.hasMore, false);
-      assert.equal(res.transactions.length, 5);
+      assert.equal(res.transactions.length, 6);
+      assert.equal(res.transactions[0].action, TonTransaction.ACTION_TOKEN_TRANSFER);
+      assert.equal(res.transactions[1].action, TonTransaction.ACTION_TRANSFER);
       assert.deepEqual(res.cursor, {
         lt: '19487583000004',
         hash: 'rH3RZieivA2wiQEedqoF4wGtRyscwGpnEScblXra6CA=',
