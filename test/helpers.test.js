@@ -1,5 +1,6 @@
 import { areAddressesEqual } from '@coinspace/cs-toncoin-wallet/helpers';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 describe('address helper', () => {
   it('should be equal (1)', () => {

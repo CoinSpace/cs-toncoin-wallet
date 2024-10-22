@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import { hex } from '@scure/base';
 import path from 'node:path';
 import sinon from 'sinon';
+import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import { Amount } from '@coinspace/cs-common';
 import Wallet, { TonTransaction } from '@coinspace/cs-toncoin-wallet';

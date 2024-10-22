@@ -14,7 +14,7 @@
   },
   "scripts": {
     "lint": "eslint . --ext .js --report-unused-disable-directives",
-    "test": "mocha test --reporter spec"
+    "test": "node --test --test-reporter spec"
   },
   "dependencies": {
     "@scure/base": "^1.1.9",
@@ -28,7 +28,6 @@
   "devDependencies": {
     "eslint": "^8.0.0",
     "eslint-config-coinspace": "^2.0.0",
-    "mocha": "^10.0.0",
     "sinon": "^19.0.0"
   },
   "eslintConfig": {
