@@ -96,6 +96,11 @@ describe('Ton Wallet', () => {
       assert.equal(wallet.state, Wallet.STATE_CREATED);
       assert.equal(wallet.tokenUrl, 'https://tonscan.org/jetton/EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs');
     });
+
+    it('wallet should have tokenUrl static method', () => {
+      const url = Wallet.tokenUrl('toncoin', 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', false);
+      assert.equal(url, 'https://tonscan.org/jetton/EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs');
+    });
   });
 
   describe('create wallet', () => {
